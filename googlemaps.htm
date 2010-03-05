@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>EklaGooglemaps</title>
+	<script type="text/javascript" src="../../tiny_mce_popup.js?v=307"></script>
+	<script type="text/javascript" src="../../utils/mctabs.js"></script>
+	<script type="text/javascript" src="js/dialog.js?v=307"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAznbYKnw5PiIZDEZzbV-nAhTv1voBitB27e5IkLhqfardrn8cwRSngiDQarPv4TcbyHO6x83Zx0r7Iw" type="text/javascript"></script>
+
+<script type="text/javascript">
+   //<![CDATA[
+
+   var map;
+
+function showAddress(address)
+{
+	var map = null;
+	var geocoder = null;
+	map = new GMap2(document.getElementById("map"));
+	map.setCenter(new GLatLng(48.87021958116231, 2.3076868057250977), 13);
+	geocoder = new GClientGeocoder();
+	if (geocoder)
+	{
+	  geocoder.getLatLng(address,
+	          function(point) {
+	            if (!point) {
+	              alert(address + " not found");
+	            } else {
+	              map.setCenter(point, 13);
+		 var customUI = map.getDefaultUI();
+        // Remove MapType.G_HYBRID_MAP
+        customUI.maptypes.hybrid = false;
+        map.setUI(customUI)
+	              var marker = new GMarker(point, {icon:G_DEFAULT_ICON, draggable: true});
+	                  //alert(point);
+	              map.addOverlay(marker);
+	            document.getElementById("coords").value=marker.getPoint().lat()+","+marker.getPoint().lng();
+				document.getElementById("zoomlevel").value = map.getZoom();
+	            }
+	          }
+	        );
+	}
+
+}
+
+   function load() {
+     if (GBrowserIsCompatible()) {
+        var map = new GMap2(document.getElementById("map"));
+        map.setCenter(new GLatLng(48.87021958116231, 2.3076868057250977), 4);
+         var customUI = map.getDefaultUI();
+        // Supprimer le type MapType.G_HYBRID_MAP
+        customUI.maptypes.hybrid = false;
+        map.setUI(customUI)
+
+        map.enableContinuousZoom();
+        map.enableDoubleClickZoom();
+
+        // icone du petit marqueur rouge
+        var icon = new GIcon();
+        icon.image = "http://labs.google.com/ridefinder/images/mm_20_red.png";
+        icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
+        icon.iconSize = new GSize(12, 20);
+        icon.shadowSize = new GSize(22, 20);
+        icon.iconAnchor = new GPoint(6, 20);
+        icon.infoWindowAnchor = new GPoint(5, 1);
+
+        //marqueur glissable . draggable : true
+        var point = new GLatLng(48.87021958116231, 2.3076868057250977);
+        var markerD2 = new GMarker(point, {icon:G_DEFAULT_ICON, draggable: true});
+        map.addOverlay(markerD2);
+
+        markerD2.enableDragging();
+
+        GEvent.addListener(markerD2, "drag", function(){
+        document.getElementById("coords").value=markerD2.getPoint().lat()+","+markerD2.getPoint().lng();
+        //document.getElementById("zoomlevel").value = map.getZoom();
+        });
+
+     }
+}
+
+//]]>
+   </script>
+
+
+</head>
+ <body onload="load()" onunload="GUnload()">
+
+
+<form onsubmit="EklaMapDialog.insert();return false;" action="#">
+
+    <div class="tabs">
+            <ul>
+                    <li id="general_tab" class="current"><span><a href="javascript:mcTabs.displayTab('general_tab','general_panel');" onmousedown="return false;">General</a></span></li>
+            </ul>
+    </div>
+
+    <div class="panel_wrapper">
+
+            <div id="general_panel" class="panel current" style="height:420px">
+                    <fieldset>
+                            <legend>Map</legend>
+                                    <table border="0" cellspacing="0" cellpadding="4">
+                                            <tr>
+                                                    <td colspan="2"><div id="map" style="width:575px;height:300px;overflow:hidden"></div></td>
+                                            </tr>
+                                    </table>
+                    </fieldset>
+                    <fieldset style="margin-top:10px">
+                            <legend>Lieu</legend>
+                            <table border="0" cellspacing="0" cellpadding="4">
+                                    <tr>
+                                            <td>coordonnées:</td><td><input style="width:500px;" id="coords" name="coords" value="48.86471476180277,2.28515625" type="text" class="text" /></td>
+                                    </tr>
+                                    <tr>
+                                            <td>Adresse:</td><td><input size="60" id="address" name="address" value="Avenue des Champs-Elysées, 75008 Paris, Ile-de-France" type="text" onblur="showAddress(this.value);return false;"><input type="button" onclick="showAddress(document.getElementById('address').value);return false;" style="border:1px solid #555;background:white;margin-left:10px;" value="Search" /></td>
+                                    </tr>
+                            </table>
+                    </fieldset>
+            </div>
+
+    </div>
+
+    <div class="mceActionPanel">
+            <div style="float: left">
+                    <input type="button" id="insert" name="insert" value="{#insert}" onclick="EklaMapDialog.insert();" />
+            </div>
+
+            <div style="float: right">
+                    <input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
+            </div>
+    </div>
+
+</form>
+
+</body>
+</html>
